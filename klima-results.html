@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/range-slider/range-slider.html">
+<link rel="import" href="../bower_components/google-chart/google-chart.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<!--
+`klima-results`
+result view for klima application
+
+@demo demo/index.html
+-->
+
+<dom-module id="klima-results">
+  <template>
+    <style include="iron-flex">
+      :host {
+        display: block;
+      }
+      #choicesContainer {
+        @apply(--layout-horizontal);
+      }
+      .choice {
+        min-width: 150px;
+        margin: 5px;
+      }
+      #chart {
+        margin: 20px;
+        width: 600px;
+      }
+    </style>
+    <div style="width: 200px">
+      <div id="choicesContainer">
+        <paper-dropdown-menu class="choice" label="Bereich">
+          <paper-listbox class="dropdown-content" selected="{{selectedDomain}}">
+            <template is="dom-repeat" items="{{klimaresults.domains}}">
+              <paper-item on-tap="_domainChanged">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu class="choice" label="Abteilung">
+          <paper-listbox class="dropdown-content">
+            <template is="dom-repeat" items="{{departments}}">
+              <paper-item on-tap="_departmentChanged">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu class="choice">
+          <paper-listbox class="dropdown-content">
+            <template is="dom-repeat" items="{{pointsOfInterst}}">
+              <paper-item on-tap="_pointsOfInterstChanged">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+    </div>
+    <google-chart id="chart"
+      type='md-line'
+      options='{"title": "Distribution of days in 2001Q1", "colors": ["#e0440e", "#e6693e", "#ec8f6e"], "legend": {"position": "none"}}'
+      cols='[{"label":"period", "type":"string", "id":"description"}, {"label":"Innere Medizin", "type":"number", "id":"internal"}, {"label":"Chitugie", "type":"number", "id":"surgery"}, {"label":"Gynäkologie", "type":"number", "id":"gynecology"}]'
+      rows='[["1", 90, 70, 66],["2", 80, 50, 65],["3", 50, 45, 50],["4", 75, 50, 50],["4", 77, 45, 50],["5", 77, 45, 50],["6", 99, 70, 70],["7", 40, 65, 75],["8", 45, 90, 80],["9", 50, 80, 90],["10", 70, 80, 90]]'>
+    </google-chart>
+    <div>Perioden</div>
+    <range-slider id="rangeSlider" min="0" max="10"  editable></range-slider>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'klima-results',
+
+      properties: {
+        klimaresults: Object
+      },
+
+      ready: function() {
+        console.log("Ready");
+      },
+
+      _domainChanged: function(e) {
+        this.departments = e.model.item.departments;
+      },
+
+      _departmentChanged: function(e) {
+        this.pointsOfInterst = e.model.item.pointsOfInterst;
+      }
+
+    });
+  </script>
+</dom-module>
