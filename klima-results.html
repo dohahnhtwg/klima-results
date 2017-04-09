@@ -1,0 +1,121 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/range-slider/range-slider.html">
+<link rel="import" href="/bower_components/klima-results-cache/klima-results-cache.html">
+<link rel="import" href="/bower_components/google-chart/google-chart.html">
+<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<!--
+`klima-results`
+result view for klima application
+
+@demo demo/index.html
+-->
+
+<dom-module id="klima-results">
+  <template>
+    <style include="iron-flex">
+      :host {
+        display: block;
+      }
+      #choicesContainer {
+        @apply(--layout-horizontal);
+      }
+      .choice {
+        min-width: 200px;
+        margin: 5px;
+      }
+      #chart {
+        margin: 20px;
+        width: 600px;
+      }
+      #rangeSlider {
+        width: 600px;
+      }
+    </style>
+    <!-- on-tap="_domainChanged"  on-tap="_departmentChanged" on-tap="_pointsOfInterstChanged"-->
+    <div style="width: 200px">
+      <div id="choicesContainer">
+        <paper-dropdown-menu class="choice" label="Bereich">
+          <paper-listbox class="dropdown-content" selected="{{selectedDomain}}" attr-for-selected="value">
+            <template is="dom-repeat" items="{{domains}}">
+              <paper-item value="{{item}}">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu class="choice" label="Abteilung">
+          <paper-listbox class="dropdown-content" selected="{{selectedDepartment}}" attr-for-selected="value">
+            <template is="dom-repeat" items="{{departments}}">
+              <paper-item value="{{item}}">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu class="choice" label="Wert">
+          <paper-listbox class="dropdown-content" selected="{{selectedValue}}" attr-for-selected="value">
+            <template is="dom-repeat" items="{{values}}">
+              <paper-item value="{{item}}">{{item.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+    </div>
+    <google-chart id="chart"
+      type='md-line'>
+    </google-chart>
+    <div>Perioden</div>
+    <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'klima-results',
+      behaviors: [KlimaResultsBehavior],
+      properties: {
+        domains: Array,
+        departments: Array,
+        values: Array,
+        selectedDomain: {
+          type: Object,
+          observer: '_domainChanged'
+        },
+        selectedDepartment: {
+          type: Object,
+          observer: '_departmentChanged'
+        },
+        selectedValue: {
+          type: Object,
+          observer: '_valueChanged'
+        }
+      },
+
+      ready: function() {
+        this.selectedDomain = domains[0];
+      },
+
+      _domainChanged: function(e) {
+        console.log(e);
+        this.departments = e.departments;
+        this.selectedDepartment = this.departments[0];
+      },
+
+      _departmentChanged: function(e) {
+        console.log(e);
+        this.values = e.values;
+        this.selectedValue = this.values[0];
+      },
+
+      _valueChanged: function(e) {
+        console.log(e);
+        this.getChartData(this.selectedValue.key, this.selectedDomain.key, this.selectedDepartment.key, function(chartData) {
+            console.log(chartData);
+            this.$.chart.cols = chartData.cols;
+            this.$.chart.rows = chartData.rows;
+            this.$.chart.options = {chart: {title: this.selectedValue.name}}
+            this.$.chart.redraw();
+        }.bind(this));
+      }
+
+    });
+  </script>
+</dom-module>

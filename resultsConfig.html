@@ -1,0 +1,209 @@
+
+<!--suppress CommaExpressionJS -->
+<script>
+        var domains = (function() {
+            // Classes
+            var Domain = function (key, name, departments) {
+                this.key = key;
+                this.name = name;
+                this.departments = departments;
+            };
+            var Department = function (key, name, values) {
+                this.key = key;
+                this.name = name;
+                this.values = values;
+            };
+            var Value = function (key, name) {
+                this.key = key;
+                this.name = name;
+            };
+            // Values
+            // Allocation data
+            var occupancyLevel = new Value("occupancyLevel", "Belegungsgrad");
+            var numPatients = new Value("numPatients", "Anzahl Patienten");
+            var arrivedPatients = new Value("arrivedPatients", "Angekommene Patienten");
+            var acceptedPatients = new Value("acceptedPatients", "Aufgenommene Patienten");
+            var rejectedPatients = new Value("rejectedPatients", "Abgewiesene Patienten");
+            var acceptedEmergencies = new Value("acceptedEmergencies", "Aufgenommene Notfälle");
+            var inSpiteOfFullOccupancy = new Value("inSpiteOfFullOccupancy", "trotz Vollbelegung");
+            var wasteOfBeds = new Value("wasteOfBeds", "Bettenverschwendung");
+            var occupancyEmergency = new Value("occupancyEmergency", "Belegungsgrad (Notfall)");
+            // Period results
+            var contributionMarginInternal = new Value("contributionMarginInternal", "Deckungsbeiträge Innere");
+            var contributionMarginSurgery = new Value("contributionMarginSurgery", "Deckungsbeiträge Chirurgie");
+            var contributionMarginGynecology = new Value("contributionMarginGynecology", "Deckungsbeiträge Gynäkologie");
+            var contributionMarginSum = new Value("contributionMarginSum", "Summe Deckungsbeiträge");
+            var costsCentralSectors = new Value("costsCentralSectors", "Kosten Zentralbereich");
+            var costsFunctionalSectors = new Value("costsFunctionalSectors", "Kosten Funktionsbereich");
+            var balance = new Value("balance", "Überschuss");
+            var balanceOverall = new Value("balanceOverall", "Überschuss alle Perioden");
+            var receivedInterest = new Value("receivedInterest", "Erlöse aus Zinsen");
+            var proceedsZBGCredit = new Value("proceedsZBGCredit", "Erlöse aus ZBG Gutschrift");
+            var costsForeignProcurement = new Value("costsForeignProcurement", "Kosten durch Fremdvergabe");
+            var economicsRequirement = new Value("economicsRequirement", "Wirtschaftsbedarf");
+            var grocery = new Value("grocery", "Lebensmittel");
+            var serviceCosts = new Value("serviceCosts", "Summe Leistungskosten");
+            var contributionMargin = new Value("contributionMargin", "Deckungsbeiträge");
+            var socialWorkerCost = new Value("socialWorkerCost", "Kosten für Sozialarbeiter");
+            var materialExpense = new Value("materialExpense", "Sachmittelkosten");
+            var publicRelationExpenses = new Value("publicRelationExpenses", "Öffentlichkeitarbeit");
+            var statisticInfo = new Value("statisticInfo", "Infopaket");
+            var overdraftInterest = new Value("overdraftInterest", "Überziehungszinsen");
+            var switchingCosts = new Value("switchingCosts", "Umstellungskosten");
+            var depreciationCentral = new Value("depreciationCentral", "Abschreibung Zentral");
+            var depreciationTabletSystem = new Value("depreciationTabletSystem", "Abschreibung TablettSystem");
+            var sumStandbyCosts = new Value("sumStandbyCosts", "Summe Bereitschaftskosten");
+            var resultOfPeriod = new Value("resultOfPeriod", "Periodenergebnis");
+            var totalPersonnelCosts = new Value("totalPersonnelCosts", "Personalkosten");
+            var depreciation = new Value("depreciation", "Abschreibungen");
+            var depreciationInvestment = new Value("depreciationInvestment", "Abschreibungen Neuinvestitionen");
+            // Contribution Margin
+            var drg = new Value("drg", "DFK");
+            var sumOfStandByCosts = new Value("sumOfStandByCosts", "Bereitschaftskosten");
+            var research = new Value("research", "Forschung");
+            var additionalRevenues = new Value("additionalRevenues", "Zusatzerlöse");
+            // Full costs
+            var incomePerPatient = new Value("incomePerPatient", "Erlöse je Patient");
+            var income = new Value("income", "Erlöse");
+            var singleCostsMedicalDemands = new Value("singleCostsMedicalDemands",
+                    "LK Einzelkosten Medizinischer Bedarf");
+            var singleCostsLaboratory = new Value("singleCostsLaboratory",
+                    "LK Einzelkosten Labor");
+            var singleCostsSurgery = new Value("singleCostsSurgery",
+                    "LK Einzelkosten OP");
+            var singleCostsOtherAreas = new Value("singleCostsOtherAreas",
+                    "LK Einzelkosten Sonstige Bereiche");
+            var commonCostsDepartments = new Value("commonCostsDepartments",
+                    "LK Gemeinkosten Abteilungen");
+            var commonCostsLaboratory= new Value("commonCostsLaboratory",
+                    "LK Gemeinkosten Labor");
+            var commonCostsSurgery = new Value("commonCostsSurgery",
+                    "LK Gemeinkosten OP");
+            var commonCostsOtherAreas = new Value("commonCostsOtherAreas",
+                    "LK Gemeinkosten Sonstige Bereiche");
+            var commonCostsKitchen = new Value("commonCostsKitchen",
+                    "LK Gemeinkosten Küche");
+            var commonCostsLaundry = new Value("commonCostsLaundry",
+                    "LK Gemeinkosten Wäscherei");
+            var commonCostsCleaning = new Value("commonCostsCleaning",
+                    "LK Gemeinkosten Reinigungsdienst");
+            var commonCostsServiceCost = new Value("commonCostsServiceCost",
+                    "LK Gemeinkosten Leistungskosten");
+            var oCEquipmentCostsDepartments = new Value("oCEquipmentCostsDepartments",
+                    "BK Sachmittelkosten Abteilungen");
+            var oCEquipmentCostsLaboratory = new Value("oCEquipmentCostsLaboratory",
+                    "BK Sachmittelkosten Labor");
+            var oCEquipmentCostsSurgery = new Value("oCEquipmentCostsSurgery",
+                    "BK Sachmittelkosten OP");
+            var oCEquipmentCostsOtherAreas = new Value("oCEquipmentCostsOtherAreas",
+                    "BK Sachmittelkosten Sonstige Bereiche");
+            var oCEquipmentCostsCentralArea = new Value("oCEquipmentCostsCentralArea",
+                    "BK Sachmittelkosten Zentralbereich");
+            var oCLaborCostsLaboratory = new Value("oCLaborCostsLaboratory",
+                    "BK Personalkosten Labor");
+            var oCLaborCostsSurgery = new Value("oCLaborCostsSurgery",
+                    "BK Personalkosten OP");
+            var oCLaborCostsOtherAreas = new Value("oCLaborCostsOtherAreas",
+                    "BK Personalkosten Sonstige Bereiche");
+            var oCLaborCostsCentralArea = new Value("oCLaborCostsCentralArea",
+                    "BK Personalkosten Zentralbereich");
+            var oCLaborCostsOCDepreciation = new Value("oCLaborCostsOCDepreciation",
+                    "BK Personalkosten BK Abschreibungen");
+            var oCLaborCostsStandbyCosts = new Value("oCLaborCostsStandbyCosts",
+                    "BK Personalkosten Bereitschaftskosten");
+            var oCLaborCostsAdditionalCosts = new Value("oCLaborCostsAdditionalCosts",
+                    "BK Personalkosten Sonstige Kosten");
+            var oCLaborCostsFullCosts = new Value("oCLaborCostsFullCosts",
+                    "BK Personalkosten Vollkosten");
+            var oCLaborCostsResultOfPeriod = new Value("oCLaborCostsResultOfPeriod",
+                    "BK Personalkosten Periodenergebnis");
+            var kitchen = new Value("kitchen", "Küche");
+            var laundry = new Value("laundry", "Wäscherei");
+            var cleaning = new Value("cleaning", "Reinigungsdienst");
+            var otherAreasCa = new Value("otherAreasCa", "Sonstige Bereiche Zentralbereich");
+            var laboratory = new Value("laboratory", "Labor");
+            var surgery = new Value("surgery", "OP");
+            var otherAreasFa = new Value("otherAreasFa", "Sonstige Bereiche Funktionsbereich");
+            var internalMedicine = new Value("internalMedicine", "Innere Medizin");
+            var surgicalWard = new Value("surgicalWard", "Chirurgie");
+            var gynecology = new Value("gynecology", "Gynäkologie");
+            // Qualities
+            var qInternalMedicine = new Value("internalMedicine", "Innere Medizin");
+            var qSurgicalWard = new Value("surgicalWard", "Chirurgie");
+            var qGynecology = new Value("gynecology", "Gynäkologie");
+            var average = new Value("average", "Durchschnitt");
+            var administrationQuality = new Value("administrationQuality", "Verwaltungsqualität");
+            var totalQuality = new Value("totalQuality", "Gesamtqualität");
+            // Arrival rates TODO
+
+            // Personal
+
+            // Departments
+            // Allocation data
+            var adDepartmentValues = [numPatients, arrivedPatients, acceptedPatients, rejectedPatients, acceptedEmergencies,
+                inSpiteOfFullOccupancy, wasteOfBeds];
+            var totalHospitalAd = new Department("total", "Gesamtes Krankenhaus",
+                    [occupancyLevel,numPatients,
+                        arrivedPatients, acceptedPatients, rejectedPatients, acceptedEmergencies, inSpiteOfFullOccupancy,
+                        wasteOfBeds, occupancyEmergency]
+            );
+            var adInternalMedicine = new Department("internalMedicine", "Innere Medizin", adDepartmentValues);
+            var adSurgicalWard = new Department("surgicalWard", "Chirurgie", adDepartmentValues);
+            var adGynecology = new Department("gynecology", "Gynäkologie", adDepartmentValues);
+            // Period results
+            var totalHospitalPr = new Department("total", "Gesamtes Krankenhaus",
+                    [contributionMarginInternal, contributionMarginSurgery, contributionMarginGynecology, contributionMarginSum,
+                        costsCentralSectors, costsFunctionalSectors, balance, balanceOverall]
+            );
+            var centralArea = new Department("centralArea", "Zentralbereich",
+                    [receivedInterest, proceedsZBGCredit, costsForeignProcurement, economicsRequirement, grocery, serviceCosts,
+                        contributionMargin, socialWorkerCost, materialExpense, publicRelationExpenses, statisticInfo, overdraftInterest,
+                        switchingCosts, depreciationCentral, depreciationTabletSystem, sumStandbyCosts, resultOfPeriod]
+            );
+            var functionArea = new Department("functionArea", "Funktionsbereich",
+                    [serviceCosts, totalPersonnelCosts, materialExpense, economicsRequirement, depreciation, depreciationInvestment,
+                        sumStandbyCosts, resultOfPeriod]
+            );
+            // Contribution Margin
+            var departments = new Department("departments", "Abteilungen",
+                    [drg, research, totalPersonnelCosts, materialExpense, depreciation, sumOfStandByCosts, contributionMargin]
+            );
+            var optionalBenefits = new Department("optionalBenefits", "Wahlleistung",
+                    [research, additionalRevenues, contributionMargin]
+            );
+            // Full costs
+            var fcDepartmentValues = [numPatients, incomePerPatient, income, singleCostsMedicalDemands, singleCostsLaboratory, singleCostsSurgery,
+                singleCostsOtherAreas, commonCostsDepartments, commonCostsLaboratory, commonCostsSurgery, commonCostsOtherAreas,
+                commonCostsKitchen, commonCostsLaundry, commonCostsCleaning, commonCostsServiceCost, oCEquipmentCostsDepartments,
+                oCEquipmentCostsLaboratory, oCEquipmentCostsSurgery, oCEquipmentCostsOtherAreas, oCEquipmentCostsCentralArea,
+                oCLaborCostsLaboratory, oCLaborCostsSurgery, oCLaborCostsOtherAreas, oCLaborCostsCentralArea, oCLaborCostsOCDepreciation,
+                oCLaborCostsStandbyCosts, oCLaborCostsAdditionalCosts, oCLaborCostsFullCosts, oCLaborCostsResultOfPeriod];
+            var internalMedicineFullCosts = new Department("internalMedicine", "Innere Medizin",fcDepartmentValues);
+            var surgicalWardFullCosts = new Department("surgicalWard", "Chirurgie",fcDepartmentValues);
+            var gynecologyFullCosts = new Department("gynecology", "Gynäkologie",fcDepartmentValues);
+            var fcMaterialExpense = new Department("materialExpense", "Sachmittelkosten",fcDepartmentValues);
+            // Qualities
+            var qualitiesDep = new Department("qualities", "Qualitäten",
+                    [qInternalMedicine, qSurgicalWard, qGynecology, average, administrationQuality, totalQuality]);
+            // Arrival rates
+            var arrivalRatesDep = new Department("arrivalRates", "Ankunftsraten",[]);
+            // Personal
+            var personnelExtent = new Department("personnelExtent", "Personalumfang",
+                    [kitchen, laundry, cleaning, otherAreasCa, laboratory, surgery, otherAreasFa, qInternalMedicine, qSurgicalWard, qGynecology]);
+            var personnelExpenditure = new Department("personnelExpenditure", "Personalkosten",
+                    [kitchen, laundry, cleaning, otherAreasCa, laboratory, surgery, otherAreasFa, qInternalMedicine, qSurgicalWard, qGynecology]);
+            // Domains
+            var allocationData = new Domain("allocationData", "Belegungsdaten",
+                    [totalHospitalAd, adInternalMedicine, adSurgicalWard, adGynecology]);
+            var resultOfPeriods = new Domain("resultOfPeriod", "Periodenergebnis",
+                    [totalHospitalPr, centralArea, functionArea]);
+            var contributionMargins = new Domain("contributionMargin", "Deckungsbeiträge",
+                    [departments, optionalBenefits]);
+            var fullCosts = new Domain("fullCosts", "Vollkosten",
+                    [internalMedicineFullCosts, surgicalWardFullCosts, gynecologyFullCosts, fcMaterialExpense]);
+            var qualities = new Domain("qualities", "Qualitäten", [qualitiesDep]);
+            var arrivalRates =  new Domain("arrivalRates", "Ankunftsraten", [arrivalRatesDep]);
+            var personal = new Domain("personal", "Personal", [personnelExtent, personnelExpenditure]);
+            return [allocationData, resultOfPeriods, contributionMargins, fullCosts, qualities, arrivalRates, personal];
+        })()
+</script>
