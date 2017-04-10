@@ -27,6 +27,7 @@
             var acceptedEmergencies = new Value("acceptedEmergencies", "Aufgenommene Notfälle");
             var inSpiteOfFullOccupancy = new Value("inSpiteOfFullOccupancy", "trotz Vollbelegung");
             var wasteOfBeds = new Value("wasteOfBeds", "Bettenverschwendung");
+            var equivalencePoints = new Value("equivalencePoints", "Äquivalenzpunkte");
             var occupancyEmergency = new Value("occupancyEmergency", "Belegungsgrad (Notfall)");
             // Period results
             var contributionMarginInternal = new Value("contributionMarginInternal", "Deckungsbeiträge Innere");
@@ -135,12 +136,11 @@
             var administrationQuality = new Value("administrationQuality", "Verwaltungsqualität");
             var totalQuality = new Value("totalQuality", "Gesamtqualität");
             // Arrival rates TODO
-
-            // Personal
+            var drgValue = function(drgNumber) {return new Value("drg" + drgNumber, "DFK " + drgNumber)};
 
             // Departments
             // Allocation data
-            var adDepartmentValues = [numPatients, arrivedPatients, acceptedPatients, rejectedPatients, acceptedEmergencies,
+            var adDepartmentValues = [occupancyLevel, arrivedPatients, acceptedPatients, rejectedPatients, acceptedEmergencies,
                 inSpiteOfFullOccupancy, wasteOfBeds];
             var totalHospitalAd = new Department("total", "Gesamtes Krankenhaus",
                     [occupancyLevel,numPatients,
@@ -165,7 +165,7 @@
                         sumStandbyCosts, resultOfPeriod]
             );
             // Contribution Margin
-            var departments = new Department("departments", "Abteilungen",
+            var departments = new Department("department", "Abteilung",
                     [drg, research, totalPersonnelCosts, materialExpense, depreciation, sumOfStandByCosts, contributionMargin]
             );
             var optionalBenefits = new Department("optionalBenefits", "Wahlleistung",
@@ -181,12 +181,17 @@
             var internalMedicineFullCosts = new Department("internalMedicine", "Innere Medizin",fcDepartmentValues);
             var surgicalWardFullCosts = new Department("surgicalWard", "Chirurgie",fcDepartmentValues);
             var gynecologyFullCosts = new Department("gynecology", "Gynäkologie",fcDepartmentValues);
-            var fcMaterialExpense = new Department("materialExpense", "Sachmittelkosten",fcDepartmentValues);
+            var fcMaterialExpense = new Department("materialExpense", "Sachmittelkosten",
+                    [kitchen, laundry, cleaning, otherAreasCa, laboratory, surgery, otherAreasFa, internalMedicine, surgicalWard, gynecology]);
             // Qualities
             var qualitiesDep = new Department("qualities", "Qualitäten",
                     [qInternalMedicine, qSurgicalWard, qGynecology, average, administrationQuality, totalQuality]);
             // Arrival rates
-            var arrivalRatesDep = new Department("arrivalRates", "Ankunftsraten",[]);
+            var arrivalRatesValues = [];
+            for(i=1;i<=17;i++) {
+                arrivalRatesValues.push(drgValue(i.toString()))
+            }
+            var arrivalRatesDep = new Department("arrivalRates", "Ankunftsraten",arrivalRatesValues);
             // Personal
             var personnelExtent = new Department("personnelExtent", "Personalumfang",
                     [kitchen, laundry, cleaning, otherAreasCa, laboratory, surgery, otherAreasFa, qInternalMedicine, qSurgicalWard, qGynecology]);
@@ -195,7 +200,7 @@
             // Domains
             var allocationData = new Domain("allocationData", "Belegungsdaten",
                     [totalHospitalAd, adInternalMedicine, adSurgicalWard, adGynecology]);
-            var resultOfPeriods = new Domain("resultOfPeriod", "Periodenergebnis",
+            var resultOfPeriods = new Domain("periodResults", "Periodenergebnis",
                     [totalHospitalPr, centralArea, functionArea]);
             var contributionMargins = new Domain("contributionMargin", "Deckungsbeiträge",
                     [departments, optionalBenefits]);

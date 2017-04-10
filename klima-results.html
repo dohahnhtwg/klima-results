@@ -34,28 +34,36 @@ result view for klima application
       #rangeSlider {
         width: 600px;
       }
+      .listboxes {
+        max-height: 500px;
+      }
+      .items {
+        --paper-item-min-height: {
+          width: 10px;
+        };
+      }
     </style>
     <!-- on-tap="_domainChanged"  on-tap="_departmentChanged" on-tap="_pointsOfInterstChanged"-->
     <div style="width: 200px">
       <div id="choicesContainer">
         <paper-dropdown-menu class="choice" label="Bereich">
-          <paper-listbox class="dropdown-content" selected="{{selectedDomain}}" attr-for-selected="value">
+          <paper-listbox class="dropdown-content listboxes" selected="{{selectedDomain}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{domains}}">
-              <paper-item value="{{item}}">{{item.name}}</paper-item>
+              <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="choice" label="Abteilung">
-          <paper-listbox class="dropdown-content" selected="{{selectedDepartment}}" attr-for-selected="value">
+          <paper-listbox class="dropdown-content listboxes" selected="{{selectedDepartment}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{departments}}">
-              <paper-item value="{{item}}">{{item.name}}</paper-item>
+              <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="choice" label="Wert">
-          <paper-listbox class="dropdown-content" selected="{{selectedValue}}" attr-for-selected="value">
+          <paper-listbox class="dropdown-content listboxes" selected="{{selectedValue}}" attr-for-selected="value">
             <template is="dom-repeat" items="{{values}}">
-              <paper-item value="{{item}}">{{item.name}}</paper-item>
+              <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -94,21 +102,23 @@ result view for klima application
       },
 
       _domainChanged: function(e) {
-        console.log(e);
         this.departments = e.departments;
         this.selectedDepartment = this.departments[0];
       },
 
       _departmentChanged: function(e) {
-        console.log(e);
+        if(e == null) return;
         this.values = e.values;
+        this.selectedValue = null;
         this.selectedValue = this.values[0];
       },
 
       _valueChanged: function(e) {
-        console.log(e);
+        if(e == null) return;
+        console.log(this.selectedValue.key + ", " + this.selectedDomain.key + ", " + this.selectedDepartment.key);
         this.getChartData(this.selectedValue.key, this.selectedDomain.key, this.selectedDepartment.key, function(chartData) {
-            console.log(chartData);
+            this.$.chart.cols = null;
+            this.$.chart.rows = null;
             this.$.chart.cols = chartData.cols;
             this.$.chart.rows = chartData.rows;
             this.$.chart.options = {chart: {title: this.selectedValue.name}}
