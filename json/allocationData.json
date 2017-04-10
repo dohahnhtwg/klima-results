@@ -13,14 +13,14 @@
                      "key":"occupancyLevel",
                      "isMerged":false,
                      "values":[
-                        "100",
-                        "100",
-                        "100"
+                        "1.0",
+                        "1.0",
+                        "1.0"
                      ]
                   },
                   {
-                     "caption":"Angekommene Patienten",
-                     "key":"arrivedPatients",
+                     "caption":"Anzahl Patienten",
+                     "key":"numPatients",
                      "isMerged":false,
                      "values":[
                         "440",
@@ -131,14 +131,14 @@
                      "key":"occupancyLevel",
                      "isMerged":false,
                      "values":[
-                        "100",
-                        "80",
-                        "98"
+                        "1.0",
+                        "1.0",
+                        "1.0"
                      ]
                   },
                   {
-                     "caption":"Angekommene Patienten",
-                     "key":"arrivedPatients",
+                     "caption":"Anzahl Patienten",
+                     "key":"numPatients",
                      "isMerged":false,
                      "values":[
                         "440",
@@ -249,14 +249,14 @@
                      "key":"occupancyLevel",
                      "isMerged":false,
                      "values":[
-                        "100",
-                        "95",
-                        "90"
+                        "1.0",
+                        "1.0",
+                        "1.0"
                      ]
                   },
                   {
-                     "caption":"Angekommene Patienten",
-                     "key":"arrivedPatients",
+                     "caption":"Anzahl Patienten",
+                     "key":"numPatients",
                      "isMerged":false,
                      "values":[
                         "440",
