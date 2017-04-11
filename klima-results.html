@@ -47,22 +47,22 @@ result view for klima application
     <div style="width: 200px">
       <div id="choicesContainer">
         <paper-dropdown-menu class="choice" label="Bereich">
-          <paper-listbox class="dropdown-content listboxes" selected="{{selectedDomain}}" attr-for-selected="value">
-            <template is="dom-repeat" items="{{domains}}">
+          <paper-listbox id="domainListbox" class="dropdown-content listboxes" selected="{{selectedDomain}}" attr-for-selected="value">
+            <template id="domainTemplate" is="dom-repeat" items="{{domains}}">
               <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="choice" label="Abteilung">
-          <paper-listbox class="dropdown-content listboxes" selected="{{selectedDepartment}}" attr-for-selected="value">
-            <template is="dom-repeat" items="{{departments}}">
+          <paper-listbox id="departmentListbox" class="dropdown-content listboxes" selected="{{selectedDepartment}}" attr-for-selected="value">
+            <template id="departmentTemplate" is="dom-repeat" items="{{departments}}">
               <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu class="choice" label="Wert">
-          <paper-listbox class="dropdown-content listboxes" selected="{{selectedValue}}" attr-for-selected="value">
-            <template is="dom-repeat" items="{{values}}">
+          <paper-listbox id="valueListbox" class="dropdown-content listboxes" selected="{{selectedValue}}" attr-for-selected="value">
+            <template id="valueTemplate" is="dom-repeat" items="{{values}}">
               <paper-item class="items" value="{{item}}">{{item.name}}</paper-item>
             </template>
           </paper-listbox>
@@ -80,9 +80,20 @@ result view for klima application
       is: 'klima-results',
       behaviors: [KlimaResultsBehavior],
       properties: {
-        domains: Array,
-        departments: Array,
-        values: Array,
+        domains: {
+          type: Array,
+          notify: true,
+        },
+        departments: {
+          type: Array,
+          observer: '_departmentsChanged',
+          notify: true,
+        },
+        values: {
+          type: Array,
+          observer: '_valuesChanged',
+          notify: true,
+        },
         selectedDomain: {
           type: Object,
           observer: '_domainChanged'
@@ -99,6 +110,7 @@ result view for klima application
 
       ready: function() {
         this.selectedDomain = domains[0];
+        console.log(this.$.chart.options);
       },
 
       _domainChanged: function(e) {
@@ -115,17 +127,33 @@ result view for klima application
 
       _valueChanged: function(e) {
         if(e == null) return;
-        console.log(this.selectedValue.key + ", " + this.selectedDomain.key + ", " + this.selectedDepartment.key);
         this.getChartData(this.selectedValue.key, this.selectedDomain.key, this.selectedDepartment.key, function(chartData) {
             this.$.chart.cols = null;
             this.$.chart.rows = null;
             this.$.chart.cols = chartData.cols;
             this.$.chart.rows = chartData.rows;
-            this.$.chart.options = {chart: {title: this.selectedValue.name}}
+            this.$.chart.options = {chart: {title: this.selectedValue.name}, colors: ['red', 'blue']}
             this.$.chart.redraw();
         }.bind(this));
+      },
+      _departmentsChanged: function(e) {
+        this._forceDropDownUpdate(this.$.departmentListbox,
+          this.$.departmentTemplate, this.departments);
+      },
+      _valuesChanged: function(e) {
+        this._forceDropDownUpdate(this.$.valueListbox,
+          this.$.valueTemplate, this.values);
+      },
+      _forceDropDownUpdate: function(listbox, listboxTemplate, items) {
+        // workaround for issue: https://github.com/PolymerElements/paper-dropdown-menu/issues/197
+        let selected = listbox.indexOf(listbox.selected);
+        listbox.selectIndex(-1); // Clear selection
+        if (selected < items.length) {
+          listboxTemplate.render();
+          listbox.forceSynchronousItemUpdate();
+          listbox.selectIndex(selected);
+        }
       }
-
     });
   </script>
 </dom-module>
