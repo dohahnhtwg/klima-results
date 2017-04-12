@@ -77,7 +77,8 @@ result view for klima application
         <paper-checkbox on-change="_selectionChanged"
           value="{{item.color}}"
           class="colPickerItem"
-          checked="{{item.showCol}}">{{item.label}}</paper-checkbox>
+          checked="{{item.showCol}}"
+          disabled="{{item.cbDisabled}}">{{item.label}}</paper-checkbox>
       </template>
     </paper-listbox>
   </template>
@@ -152,47 +153,30 @@ result view for klima application
           }.bind(this));
           newRows.push(newRow);
         }
+        this._disableCheckBoxes(newCols);
         this._setColorOfChart(newCols);
         this.$.chart.cols = null;
         this.$.chart.rows = null;
         this.$.chart.cols = newCols;
         this.$.chart.rows = newRows;
-        this.$.chart.redraw();
       },
 
-      // _removeChartCol: function(col) {
-      //   var newCols = [];
-      //   var newRows = [];
-      //   var indexOfColToRemove = null;
-      //   for(var i = 0; i < this.chartCols.length; i++) {
-      //     if(this.chartCols[i].id !== col.id) {
-      //       newCols.push(this.chartCols[i]);
-      //     } else {
-      //       indexOfCol = i;
-      //     }
-      //   };
-      //   for(var j = 0; j < this.chartRow[i].length; j++) {
-      //     var newCol = [];
-      //     for(var k = 0; k < th )
-      //   };
-      //
-      //
-      //
-      //   this.chartCols.splice(indexOfCol, 1);
-      //   this.chartRows.forEach(function(row) {
-      //     row.splice(indexOfCol, 1);
-      //   });
-      //   this._setColorOfChart();
-      //   this.$.chart.cols = null;
-      //   this.$.chart.rows = null;
-      //   this.$.chart.cols = this.chartCols;
-      //   this.$.chart.rows = this.chartRows;
-      //   this.$.chart.redraw();
-      // },
-      //
-      // _addChartCol: function(col) {
-      //
-      // },
+      _disableCheckBoxes: function(newCols) {
+        var i = 0;
+        if(newCols.length === 2) {
+          for(i; i < this.colPickerItems.length; i++) {
+            if(this.colPickerItems[i].showCol) {
+              this.set('colPickerItems.' + i +'.cbDisabled', true);
+            }
+          }
+        } else {
+          if(newCols.length === 3) {
+            for(i; i < this.colPickerItems.length; i++) {
+                this.set('colPickerItems.' + i +'.cbDisabled', false);
+            }
+          }
+        }
+      },
 
       _domainChanged: function(e) {
         this.departments = e.departments;
@@ -215,7 +199,7 @@ result view for klima application
             this.$.chart.rows = null;
             this.$.chart.cols = this.chartCols;
             this.$.chart.rows = this.chartRows;
-            this.$.chart.options = {chart: {title: this.selectedValue.name}/*, legend: {position: 'none'}*/}
+            this.$.chart.options = {chart: {title: this.selectedValue.name}, legend: {position: 'none'}}
             this.$.chart.redraw();
             this._setColpickerItems();
             this._setColorOfColPickerItems();
@@ -246,7 +230,8 @@ result view for klima application
             id: this.chartCols[i].id,
             label: this.chartCols[i].label,
             color: this.colors[i-1],
-            showCol: true
+            showCol: true,
+            cbDisabled: false
           }
         }
         this.colPickerItems = colPickerItems;
@@ -267,7 +252,7 @@ result view for klima application
         var colors = [];
         for(var i = 1; i < newCols.length; i++) {
           colors.push(newCols[i].color);
-        };
+        }
         this.$.chart.options.colors = colors;
       }
     });
