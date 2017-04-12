@@ -6,6 +6,7 @@
 <link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="/bower_components/paper-item/paper-item.html">
 <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
 
 <!--
 `klima-results`
@@ -16,7 +17,7 @@ result view for klima application
 
 <dom-module id="klima-results">
   <template>
-    <style include="iron-flex">
+    <style include="iron-flex" is="custom-style">
       :host {
         display: block;
       }
@@ -68,11 +69,17 @@ result view for klima application
           </paper-listbox>
         </paper-dropdown-menu>
     </div>
-    <google-chart id="chart"
-      type='md-line'>
-    </google-chart>
+    <google-chart id="chart"type="md-line"></google-chart>
     <div>Perioden</div>
     <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
+    <paper-listbox id="colPicker" class="dropdown-content">
+      <template id="colPickerTemp" is="dom-repeat" items="{{colPickerItems}}">
+        <paper-checkbox on-change="_selectionChanged"
+          value="{{item.color}}"
+          class="colPickerItem"
+          checked="{{item.showCol}}">{{item.label}}</paper-checkbox>
+      </template>
+    </paper-listbox>
   </template>
 
   <script>
@@ -82,17 +89,17 @@ result view for klima application
       properties: {
         domains: {
           type: Array,
-          notify: true,
+          notify: true
         },
         departments: {
           type: Array,
           observer: '_departmentsChanged',
-          notify: true,
+          notify: true
         },
         values: {
           type: Array,
           observer: '_valuesChanged',
-          notify: true,
+          notify: true
         },
         selectedDomain: {
           type: Object,
@@ -105,13 +112,87 @@ result view for klima application
         selectedValue: {
           type: Object,
           observer: '_valueChanged'
+        },
+        chartCols: {
+          type: Array,
+          notify: true
+        },
+        chartRows: {
+          type: Array,
+          notify: true
+        },
+        colPickerItems: {
+          type: Array,
+          notify: true
         }
       },
 
       ready: function() {
         this.selectedDomain = domains[0];
-        console.log(this.$.chart.options);
       },
+
+      _selectionChanged: function(e) {
+        this._redrawChart();
+      },
+
+      _redrawChart: function() {
+        var newCols = [this.chartCols[0]];
+        var newRows = [];
+        var selectedIndexes = [0];
+        for(var i = 0; i < this.colPickerItems.length; i++) {
+          if(this.colPickerItems[i].showCol) {
+            newCols.push(this.chartCols[i+1]);
+            selectedIndexes.push(i + 1);
+          }
+        }
+        for(var j = 0; j < this.chartRows.length; j++) {
+          var newRow = [];
+          selectedIndexes.forEach(function(selectedIndex) {
+            newRow.push(this.chartRows[j][selectedIndex]);
+          }.bind(this));
+          newRows.push(newRow);
+        }
+        this._setColorOfChart(newCols);
+        this.$.chart.cols = null;
+        this.$.chart.rows = null;
+        this.$.chart.cols = newCols;
+        this.$.chart.rows = newRows;
+        this.$.chart.redraw();
+      },
+
+      // _removeChartCol: function(col) {
+      //   var newCols = [];
+      //   var newRows = [];
+      //   var indexOfColToRemove = null;
+      //   for(var i = 0; i < this.chartCols.length; i++) {
+      //     if(this.chartCols[i].id !== col.id) {
+      //       newCols.push(this.chartCols[i]);
+      //     } else {
+      //       indexOfCol = i;
+      //     }
+      //   };
+      //   for(var j = 0; j < this.chartRow[i].length; j++) {
+      //     var newCol = [];
+      //     for(var k = 0; k < th )
+      //   };
+      //
+      //
+      //
+      //   this.chartCols.splice(indexOfCol, 1);
+      //   this.chartRows.forEach(function(row) {
+      //     row.splice(indexOfCol, 1);
+      //   });
+      //   this._setColorOfChart();
+      //   this.$.chart.cols = null;
+      //   this.$.chart.rows = null;
+      //   this.$.chart.cols = this.chartCols;
+      //   this.$.chart.rows = this.chartRows;
+      //   this.$.chart.redraw();
+      // },
+      //
+      // _addChartCol: function(col) {
+      //
+      // },
 
       _domainChanged: function(e) {
         this.departments = e.departments;
@@ -128,12 +209,16 @@ result view for klima application
       _valueChanged: function(e) {
         if(e == null) return;
         this.getChartData(this.selectedValue.key, this.selectedDomain.key, this.selectedDepartment.key, function(chartData) {
+            this.chartCols = chartData.cols;
+            this.chartRows = chartData.rows;
             this.$.chart.cols = null;
             this.$.chart.rows = null;
-            this.$.chart.cols = chartData.cols;
-            this.$.chart.rows = chartData.rows;
-            this.$.chart.options = {chart: {title: this.selectedValue.name}, colors: ['red', 'blue']}
+            this.$.chart.cols = this.chartCols;
+            this.$.chart.rows = this.chartRows;
+            this.$.chart.options = {chart: {title: this.selectedValue.name}/*, legend: {position: 'none'}*/}
             this.$.chart.redraw();
+            this._setColpickerItems();
+            this._setColorOfColPickerItems();
         }.bind(this));
       },
       _departmentsChanged: function(e) {
@@ -153,6 +238,37 @@ result view for klima application
           listbox.forceSynchronousItemUpdate();
           listbox.selectIndex(selected);
         }
+      },
+      _setColpickerItems: function() {
+        var colPickerItems = [];
+        for(var i = 1; i < this.chartCols.length; i++) {
+          colPickerItems[i-1] = {
+            id: this.chartCols[i].id,
+            label: this.chartCols[i].label,
+            color: this.colors[i-1],
+            showCol: true
+          }
+        }
+        this.colPickerItems = colPickerItems;
+      },
+      _setColorOfColPickerItems: function() {
+        this._setColorOfChart(this.chartCols);
+        this.$.colPickerTemp.render();
+        var checkboxes = this.$.colPicker.getElementsByTagName('paper-checkbox');
+        for (var i = 0; i < checkboxes.length; i++) {
+          checkboxes[i].customStyle['--paper-checkbox-checked-color'] = checkboxes[i].value;;
+          checkboxes[i].customStyle['--paper-checkbox-checked-ink-color'] = checkboxes[i].value;;
+          checkboxes[i].customStyle['--paper-checkbox-unchecked-color'] = checkboxes[i].value;;
+          checkboxes[i].customStyle['--paper-checkbox-unchecked-ink-color'] = checkboxes[i].value;
+          checkboxes[i].updateStyles();
+        }
+      },
+      _setColorOfChart: function(newCols) {
+        var colors = [];
+        for(var i = 1; i < newCols.length; i++) {
+          colors.push(newCols[i].color);
+        };
+        this.$.chart.options.colors = colors;
       }
     });
   </script>

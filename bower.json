@@ -10,7 +10,8 @@
     "paper-item": "PolymerElements/paper-item#^1.2.1",
     "paper-listbox": "PolymerElements/paper-listbox#^1.1.2",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^1.3.0",
-	  "klima-results-cache": "https://github.com/dohahnhtwg/klima-results-cache.git"
+    "klima-results-cache": "https://github.com/dohahnhtwg/klima-results-cache.git",
+    "paper-checkbox": "PolymerElements/paper-checkbox#^1.4.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
