@@ -83,7 +83,7 @@ result view for klima application
     </div>
     <div id="chartContainer">
       <div>
-        <google-chart id="chart"type="md-line"></google-chart>
+        <google-chart id="chart" type="md-line"></google-chart>
         <div style="margin-bottom: 8px;">Perioden</div>
         <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
       </div>
@@ -98,12 +98,20 @@ result view for klima application
                 disabled="{{item.cbDisabled}}"
                 noink>
               </paper-checkbox>
-              <div style="white-space:nowrap;">{{item.label}}</div>
+              <div on-tap="_highlightRow" style="white-space:nowrap;">{{item.label}}</div>
             </div>
           </template>
         </div>
       </div>
     </div>
+    <paper-dropdown-menu>
+      <paper-listbox class="dropdown-content">
+        <paper-item>FUVK!</paper-item>
+        <paper-item>FUVK!</paper-item>
+        <paper-item>FUVK!</paper-item>
+        <paper-item>FUVK!</paper-item>
+      </paper-listbox>
+    </paper-dropdown-menu>
   </template>
 
   <script>
@@ -277,6 +285,27 @@ result view for klima application
           colors.push(newCols[i].color);
         }
         this.$.chart.options.colors = colors;
+      },
+      _highlightRow: function(e) {
+        console.log("Tap");
+        console.log(this.colPickerItems);
+        var j = 0;
+        for(var i = 0; i < this.colPickerItems.length; i++) {
+          if(this.colPickerItems[i].id === e.model.item.id) {
+            if(this.colPickerItems[i].showCol) {
+              j++;
+              break;
+            } else {
+              return;
+            }
+          } else{
+            if(this.colPickerItems[i].showCol) {
+              j++;
+            }
+          }
+        }
+        console.log(j);
+        this.$.chart.selection=[{column: j}]
       }
     });
   </script>
