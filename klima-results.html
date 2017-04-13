@@ -43,6 +43,18 @@ result view for klima application
           width: 10px;
         };
       }
+      #chartContainer {
+        @apply(--layout-horizontal);
+      }
+      #colPicker {
+        position:absolute;
+        top:30%;
+        @apply(--layout-vertical);
+      }
+      .colPickerItem {
+        float:left;
+        @apply(--layout-horizontal);
+      }
     </style>
     <!-- on-tap="_domainChanged"  on-tap="_departmentChanged" on-tap="_pointsOfInterstChanged"-->
     <div style="width: 200px">
@@ -69,18 +81,29 @@ result view for klima application
           </paper-listbox>
         </paper-dropdown-menu>
     </div>
-    <google-chart id="chart"type="md-line"></google-chart>
-    <div>Perioden</div>
-    <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
-    <paper-listbox id="colPicker" class="dropdown-content">
-      <template id="colPickerTemp" is="dom-repeat" items="{{colPickerItems}}">
-        <paper-checkbox on-change="_selectionChanged"
-          value="{{item.color}}"
-          class="colPickerItem"
-          checked="{{item.showCol}}"
-          disabled="{{item.cbDisabled}}">{{item.label}}</paper-checkbox>
-      </template>
-    </paper-listbox>
+    <div id="chartContainer">
+      <div>
+        <google-chart id="chart"type="md-line"></google-chart>
+        <div style="margin-bottom: 8px;">Perioden</div>
+        <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
+      </div>
+      <div style="position:relative">
+        <div id="colPicker">
+          <template id="colPickerTemp" is="dom-repeat" items="{{colPickerItems}}">
+            <div class="colPickerItem" aria-selected="true">
+              <paper-checkbox style="float:left;" on-change="_selectionChanged"
+                value="{{item.color}}"
+                class="colPickerItem"
+                checked="{{item.showCol}}"
+                disabled="{{item.cbDisabled}}"
+                noink>
+              </paper-checkbox>
+              <div style="white-space:nowrap;">{{item.label}}</div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
   </template>
 
   <script>
