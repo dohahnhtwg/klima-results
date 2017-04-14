@@ -53,7 +53,13 @@ result view for klima application
       }
       .colPickerItem {
         float:left;
+        margin: 1px;
         @apply(--layout-horizontal);
+      }
+      .colLabel {
+        white-space:nowrap;
+        cursor: pointer;
+        cursor: hand;
       }
     </style>
     <!-- on-tap="_domainChanged"  on-tap="_departmentChanged" on-tap="_pointsOfInterstChanged"-->
@@ -83,9 +89,9 @@ result view for klima application
     </div>
     <div id="chartContainer">
       <div>
-        <google-chart id="chart" type="md-line"></google-chart>
+        <google-chart id="chart" type="bar"></google-chart>
         <div style="margin-bottom: 8px;">Perioden</div>
-        <range-slider id="rangeSlider" min="0" max="10" editable></range-slider>
+        <range-slider id="rangeSlider" min="0" max="2" editable></range-slider>
       </div>
       <div style="position:relative">
         <div id="colPicker">
@@ -95,23 +101,14 @@ result view for klima application
                 value="{{item.color}}"
                 class="colPickerItem"
                 checked="{{item.showCol}}"
-                disabled="{{item.cbDisabled}}"
-                noink>
+                disabled="{{item.cbDisabled}}">
               </paper-checkbox>
-              <div on-tap="_highlightRow" style="white-space:nowrap;">{{item.label}}</div>
+              <div class="colLabel" on-tap="_highlightCol">{{item.label}}</div>
             </div>
           </template>
         </div>
       </div>
     </div>
-    <paper-dropdown-menu>
-      <paper-listbox class="dropdown-content">
-        <paper-item>FUVK!</paper-item>
-        <paper-item>FUVK!</paper-item>
-        <paper-item>FUVK!</paper-item>
-        <paper-item>FUVK!</paper-item>
-      </paper-listbox>
-    </paper-dropdown-menu>
   </template>
 
   <script>
@@ -156,11 +153,14 @@ result view for klima application
         colPickerItems: {
           type: Array,
           notify: true
-        }
+        },
+        newDataFromServer: false
       },
 
       ready: function() {
         this.selectedDomain = domains[0];
+        this.$.rangeSlider.addEventListener('startChanged', this._minPeriodChanged.bind(this));
+        this.$.rangeSlider.addEventListener('endChanged', this._maxPeriodChanged.bind(this));
       },
 
       _selectionChanged: function(e) {
@@ -177,7 +177,7 @@ result view for klima application
             selectedIndexes.push(i + 1);
           }
         }
-        for(var j = 0; j < this.chartRows.length; j++) {
+        for(var j = this.$.rangeSlider.start; j <= this.$.rangeSlider.end; j++) {
           var newRow = [];
           selectedIndexes.forEach(function(selectedIndex) {
             newRow.push(this.chartRows[j][selectedIndex]);
@@ -224,8 +224,13 @@ result view for klima application
       _valueChanged: function(e) {
         if(e == null) return;
         this.getChartData(this.selectedValue.key, this.selectedDomain.key, this.selectedDepartment.key, function(chartData) {
+            this.newDataFromServer = true;
             this.chartCols = chartData.cols;
             this.chartRows = chartData.rows;
+            this.$.rangeSlider.start = 0;
+            this.$.rangeSlider.min = 0;
+            this.$.rangeSlider.end = this.chartRows.length - 1;
+            this.$.rangeSlider.max = this.chartRows.length - 1;
             this.$.chart.cols = null;
             this.$.chart.rows = null;
             this.$.chart.cols = this.chartCols;
@@ -234,6 +239,7 @@ result view for klima application
             this.$.chart.redraw();
             this._setColpickerItems();
             this._setColorOfColPickerItems();
+            this.newDataFromServer = false;
         }.bind(this));
       },
       _departmentsChanged: function(e) {
@@ -286,9 +292,7 @@ result view for klima application
         }
         this.$.chart.options.colors = colors;
       },
-      _highlightRow: function(e) {
-        console.log("Tap");
-        console.log(this.colPickerItems);
+      _highlightCol: function(e) {
         var j = 0;
         for(var i = 0; i < this.colPickerItems.length; i++) {
           if(this.colPickerItems[i].id === e.model.item.id) {
@@ -304,8 +308,17 @@ result view for klima application
             }
           }
         }
-        console.log(j);
         this.$.chart.selection=[{column: j}]
+      },
+      _minPeriodChanged: function(e) {
+        if(!this.newDataFromServer) {
+          this._redrawChart();
+        }
+      },
+      _maxPeriodChanged: function(e) {
+        if(!this.newDataFromServer) {
+          this._redrawChart();
+        }
       }
     });
   </script>
