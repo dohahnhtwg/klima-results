@@ -1,12 +1,12 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
-<link rel="import" href="/bower_components/range-slider/range-slider.html">
-<link rel="import" href="/bower_components/klima-results-cache/klima-results-cache.html">
-<link rel="import" href="/bower_components/google-chart/google-chart.html">
-<link rel="import" href="/bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="/bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="/bower_components/paper-item/paper-item.html">
-<link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="/bower_components/paper-checkbox/paper-checkbox.html">
+<!-- <link rel="import" href="../polymer/polymer.html"> -->
+<link rel="import" href="../range-slider/range-slider.html">
+<link rel="import" href="../klima-results-cache/klima-results-cache.html">
+<link rel="import" href="../google-chart/google-chart.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
 
 <!--
 `klima-results`
@@ -115,52 +115,96 @@ result view for klima application
     Polymer({
       is: 'klima-results',
       behaviors: [KlimaResultsBehavior],
+
       properties: {
+        /**
+         * Klima Domains
+         */
         domains: {
           type: Array,
-          notify: true
+          notify: true,
+          observer: '_domainsChanged'
         },
+
+        /**
+         * Departments of the selected Domain
+         */
         departments: {
           type: Array,
           observer: '_departmentsChanged',
           notify: true
         },
+
+        /**
+         * Values of selected Department
+         */
         values: {
           type: Array,
           observer: '_valuesChanged',
           notify: true
         },
+
+        /**
+         * Selected Domain
+         */
         selectedDomain: {
           type: Object,
           observer: '_domainChanged'
         },
+
+        /**
+         * Selected Department
+         */
         selectedDepartment: {
           type: Object,
           observer: '_departmentChanged'
         },
+
+        /**
+         * Selected Value
+         */
         selectedValue: {
           type: Object,
           observer: '_valueChanged'
         },
+
+        /**
+         * Columns of the chart
+         */
         chartCols: {
           type: Array,
           notify: true
         },
+
+        /**
+         * Rows of the chart
+         */
         chartRows: {
           type: Array,
           notify: true
         },
+
+        /**
+         * Columns of the selected Value
+         */
         colPickerItems: {
           type: Array,
           notify: true
         },
+
+        /**
+         * True if the data comes form the Server
+         */
         newDataFromServer: false
       },
 
       ready: function() {
-        this.selectedDomain = domains[0];
         this.$.rangeSlider.addEventListener('startChanged', this._minPeriodChanged.bind(this));
         this.$.rangeSlider.addEventListener('endChanged', this._maxPeriodChanged.bind(this));
+      },
+
+      _domainsChanged: function(e) {
+        this.selectedDomain = this.domains[0];
       },
 
       _selectionChanged: function(e) {
@@ -242,14 +286,17 @@ result view for klima application
             this.newDataFromServer = false;
         }.bind(this));
       },
+
       _departmentsChanged: function(e) {
         this._forceDropDownUpdate(this.$.departmentListbox,
           this.$.departmentTemplate, this.departments);
       },
+
       _valuesChanged: function(e) {
         this._forceDropDownUpdate(this.$.valueListbox,
           this.$.valueTemplate, this.values);
       },
+
       _forceDropDownUpdate: function(listbox, listboxTemplate, items) {
         // workaround for issue: https://github.com/PolymerElements/paper-dropdown-menu/issues/197
         let selected = listbox.indexOf(listbox.selected);
@@ -260,6 +307,7 @@ result view for klima application
           listbox.selectIndex(selected);
         }
       },
+
       _setColpickerItems: function() {
         var colPickerItems = [];
         for(var i = 1; i < this.chartCols.length; i++) {
@@ -273,6 +321,7 @@ result view for klima application
         }
         this.colPickerItems = colPickerItems;
       },
+
       _setColorOfColPickerItems: function() {
         this._setColorOfChart(this.chartCols);
         this.$.colPickerTemp.render();
@@ -285,6 +334,7 @@ result view for klima application
           checkboxes[i].updateStyles();
         }
       },
+
       _setColorOfChart: function(newCols) {
         var colors = [];
         for(var i = 1; i < newCols.length; i++) {
@@ -292,6 +342,7 @@ result view for klima application
         }
         this.$.chart.options.colors = colors;
       },
+
       _highlightCol: function(e) {
         var j = 0;
         for(var i = 0; i < this.colPickerItems.length; i++) {
@@ -310,11 +361,13 @@ result view for klima application
         }
         this.$.chart.selection=[{column: j}]
       },
+
       _minPeriodChanged: function(e) {
         if(!this.newDataFromServer) {
           this._redrawChart();
         }
       },
+
       _maxPeriodChanged: function(e) {
         if(!this.newDataFromServer) {
           this._redrawChart();

@@ -11,18 +11,24 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../klima-results.html">
+    <link rel="import" href="/resultsConfig.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
     </style>
   </head>
   <body>
-    <div class="vertical-section-container centered">
+    <div style="max-width: 1000px;" class="vertical-section-container centered">
       <h3>Basic klima-results demo</h3>
       <demo-snippet>
         <template>
-          <klima-results></klima-results>
+          <klima-results id="klimaResults"></klima-results>
         </template>
       </demo-snippet>
     </div>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+         document.getElementById("klimaResults").domains = domains;
+      });
+    </script>
   </body>
 </html>
