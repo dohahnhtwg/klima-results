@@ -91,9 +91,21 @@ result view for klima application
         <div style="padding-top: 20px;" class="horizontal-section">
           <paper-menu-button vertical-align="bottom">
             <paper-icon-button id="chartSelector" class="dropdown-trigger" src="[[selectedChart.src]]" alt="selected_chart"></paper-icon-button>
-            <paper-icon-button id="barSelector" class="dropdown-content" src="./src/bar_chart.png" alt="bar_chart"></paper-icon-button>
-            <paper-icon-button id="columnSelector" class="dropdown-content" src="./src/column_chart.png" alt="column_chart"></paper-icon-button>
-            <paper-icon-button id="lineSelector" class="dropdown-content" src="./src/line_chart.png" alt="line_chart"></paper-icon-button>
+            <paper-icon-button id="barSelector"
+              class="dropdown-content"
+              on-tap="changeChart"
+              src="./src/bar_chart.png"
+              alt="bar_chart"></paper-icon-button>
+            <paper-icon-button id="columnSelector"
+              class="dropdown-content"
+              on-tap="changeChart"
+              src="./src/column_chart.png"
+              alt="column_chart"></paper-icon-button>
+            <paper-icon-button id="lineSelector"
+              class="dropdown-content"
+              on-tap="changeChart"
+              src="./src/line_chart.png"
+              alt="line_chart"></paper-icon-button>
           </paper-menu-button>
         </div>
       </div>
@@ -390,6 +402,39 @@ result view for klima application
       _maxPeriodChanged: function(e) {
         if(!this.newDataFromServer) {
           this._redrawChart();
+        }
+      },
+
+      changeChart: function(e) {
+        var target = e.target;
+        while(target != null && target.nodeName !== "PAPER-ICON-BUTTON") {
+          target = target.parentElement;
+        }
+        switch(target.id) {
+          case "barSelector":
+            this.selectedChart = {
+              src: "/src/bar_chart.png",
+              type: "bar"
+            }
+            break;
+          case "columnSelector":
+            this.selectedChart = {
+              src: "/src/column_chart.png",
+              type: "column"
+            }
+            break;
+          case "lineSelector":
+            this.selectedChart = {
+              src: "/src/line_chart.png",
+              type: "line"
+            }
+            break;
+          default:
+            console.warn("No matching id");
+            this.selectedChart = {
+              src: "/src/bar_chart.png",
+              type: "bar"
+            }
         }
       }
     });
