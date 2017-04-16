@@ -7,7 +7,9 @@
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../paper-checkbox/paper-checkbox.html">
-
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../iron-image/iron-image.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <!--
 `klima-results`
 result view for klima application
@@ -86,10 +88,18 @@ result view for klima application
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-    </div>
+        <div style="padding-top: 20px;" class="horizontal-section">
+          <paper-menu-button vertical-align="bottom">
+            <paper-icon-button id="chartSelector" class="dropdown-trigger" src="[[selectedChart.src]]" alt="selected_chart"></paper-icon-button>
+            <paper-icon-button id="barSelector" class="dropdown-content" src="./src/bar_chart.png" alt="bar_chart"></paper-icon-button>
+            <paper-icon-button id="columnSelector" class="dropdown-content" src="./src/column_chart.png" alt="column_chart"></paper-icon-button>
+            <paper-icon-button id="lineSelector" class="dropdown-content" src="./src/line_chart.png" alt="line_chart"></paper-icon-button>
+          </paper-menu-button>
+        </div>
+      </div>
     <div id="chartContainer">
       <div>
-        <google-chart id="chart" type="bar"></google-chart>
+        <google-chart id="chart" type="[[selectedChart.type]]"></google-chart>
         <div style="margin-bottom: 8px;">Perioden</div>
         <range-slider id="rangeSlider" min="0" max="2" editable></range-slider>
       </div>
@@ -195,10 +205,19 @@ result view for klima application
         /**
          * True if the data comes form the Server
          */
-        newDataFromServer: false
+        newDataFromServer: false,
+
+        selectedChart: {
+          type: Object,
+          value: {
+            src: "/src/bar_chart.png",
+            type: "bar"
+          }
+        }
       },
 
       ready: function() {
+        console.log(this.selectedChart);
         this.$.rangeSlider.addEventListener('startChanged', this._minPeriodChanged.bind(this));
         this.$.rangeSlider.addEventListener('endChanged', this._maxPeriodChanged.bind(this));
       },
