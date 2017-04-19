@@ -10,6 +10,8 @@
     <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../klima-results.html">
+    <link rel="import" href="../resultsConfig.html">
+    <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
   </head>
   <body>
     <test-fixture id="basic">
@@ -23,6 +25,84 @@
         test('instantiating the element works', function() {
           var element = fixture('basic');
           assert.equal(element.is, 'klima-results');
+        });
+        test('set the domain should initialize the listboxes', function(done) {
+          var element = fixture('basic');
+          element.domains = domains;
+          flush(function() {
+            var domains = Polymer.dom(element.$.domainListbox).querySelectorAll('paper-item');
+            var departments = Polymer.dom(element.$.departmentListbox).querySelectorAll('paper-item');
+            var values = Polymer.dom(element.$.valueListbox).querySelectorAll('paper-item');
+            expect(domains).to.have.lengthOf(7);
+            expect(departments).to.have.lengthOf(4);
+            expect(values).to.have.lengthOf(9);
+            done();
+          })
+        });
+        test('changing the domain should adjust department and values', function(done) {
+          var element = fixture('basic');
+          element.domains = domains;
+          flush(function() {
+            var domains = Polymer.dom(element.$.domainListbox).querySelectorAll('paper-item');
+            domains[2].addEventListener('click', function() {
+              var departments = Polymer.dom(element.$.departmentListbox).querySelectorAll('paper-item');
+              var values = Polymer.dom(element.$.valueListbox).querySelectorAll('paper-item');
+              expect(departments).to.have.lengthOf(2);
+              expect(values).to.have.lengthOf(7);
+              done();
+            })
+            MockInteractions.tap(domains[2]);
+          })
+        });
+        test('should change the chart type', function(done) {
+          var element = fixture('basic');
+          var lineButton = element.$.lineSelector;
+          element.domains = domains;
+          expect(element.$.chart.type).to.be.equals('bar');
+          lineButton.addEventListener('click', function() {
+            expect(element.$.chart.type).to.be.equals('line');
+            done();
+          })
+          MockInteractions.tap(lineButton);
+        });
+        test('deselect a col should remove a column in the chart', function(done) {
+          var element = fixture('basic');
+          element.domains = domains;
+          flush(function() {
+            var colPickerItems = Polymer.dom(element.root).querySelectorAll('.colPickerItem');
+            expect(element.$.chart.cols).to.have.length(4);
+            colPickerItems[1].addEventListener('click', function() {
+              expect(element.$.chart.cols).to.have.length(3);
+              done();
+            })
+            MockInteractions.tap(colPickerItems[1]);
+          })
+        });
+        test('should not be possible to deselect all columns', function(done) {
+          var element = fixture('basic');
+          element.domains = domains;
+          flush(function() {
+            var colPickerItems = Polymer.dom(element.root).querySelectorAll('.colPickerItem');
+            expect(element.$.chart.cols).to.have.length(4);
+            colPickerItems[1].addEventListener('click', function() {
+              expect(element.$.chart.cols).to.have.length(2);
+              expect(colPickerItems[2].disabled).to.be.ok;
+              done();
+            })
+            MockInteractions.tap(colPickerItems[0]);
+            MockInteractions.tap(colPickerItems[1]);
+            MockInteractions.tap(colPickerItems[2]);
+          })
+        });
+        test('should adjust chart if periods reduced', function(done) {
+          var element = fixture('basic');
+          element.domains = domains;
+          flush(function() {
+            expect(element.$.chart.rows).to.have.length(3);
+            element.$.rangeSlider.end = element.$.rangeSlider.end - 1;
+            expect(element.$.chart.rows).to.have.length(2);
+            done();
+          })
         });
       });
     </script>

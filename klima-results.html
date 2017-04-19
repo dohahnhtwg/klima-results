@@ -113,12 +113,12 @@ result view for klima application
       <div>
         <google-chart id="chart" type="[[selectedChart.type]]"></google-chart>
         <div style="margin-bottom: 8px;">Perioden</div>
-        <range-slider id="rangeSlider" min="0" max="2" editable></range-slider>
+        <range-slider id="rangeSlider" min="0" max="2" start="0" end="2" editable></range-slider>
       </div>
       <div style="position:relative">
         <div id="colPicker">
           <template id="colPickerTemp" is="dom-repeat" items="{{colPickerItems}}">
-            <div class="colPickerItem" aria-selected="true">
+            <div>
               <paper-checkbox style="float:left;" on-change="_selectionChanged"
                 value="{{item.color}}"
                 class="colPickerItem"
@@ -229,7 +229,6 @@ result view for klima application
       },
 
       ready: function() {
-        console.log(this.selectedChart);
         this.$.rangeSlider.addEventListener('startChanged', this._minPeriodChanged.bind(this));
         this.$.rangeSlider.addEventListener('endChanged', this._maxPeriodChanged.bind(this));
       },
